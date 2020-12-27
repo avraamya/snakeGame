@@ -6,9 +6,17 @@ using CodeMonkey.Utils;
 
 public class GameHandler : MonoBehaviour
 {
-    // Start is called before the first frame update
+    private static GameHandler instance;
+
+    private static int score;
     [SerializeField] private Snake snake;
     private LevelGrid levelGrid;
+
+
+    private void Awake()
+    {
+        instance = this;
+    }
     void Start()
     {
         Debug.Log("GameHandler.Start");
@@ -19,9 +27,13 @@ public class GameHandler : MonoBehaviour
         levelGrid.Setup(snake);
     }
 
-    // Update is called once per frame
-    void Update()
+    public static int GetScore()
     {
-        
+        return score;
+    }
+
+    public static void AddScore()
+    {
+        score += 100;
     }
 }
