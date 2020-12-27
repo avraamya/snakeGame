@@ -15,6 +15,13 @@ public class Snake : MonoBehaviour
         Down
     }
 
+    private enum State
+    {
+        Alive,
+        Dead
+    }
+
+    private State state;
     private Direction gridMoveDirection;
     private Vector2Int lastMoveDirection;
     private Vector2Int gridPosition;
@@ -33,7 +40,7 @@ public class Snake : MonoBehaviour
     private void Awake()
     {
         gridPosition = new Vector2Int(10, 10);
-        gridMoveTimeMax = 0.3f;
+        gridMoveTimeMax = 0.1f;
         gridMoveTimer = gridMoveTimeMax;
         gridMoveDirection = Direction.Right;
         lastMoveDirection = new Vector2Int(1, 0);
@@ -42,12 +49,20 @@ public class Snake : MonoBehaviour
         snakeBodySize = 0;
 
         snakeBodyPartList = new List<SnakeBodyPart>();
+        state = State.Alive;
     }
 
     private void Update()
     {
-        HandleInput();
-        HandlerGridMovement();
+        switch (state)
+        {
+        case State.Alive:
+            HandleInput();
+            HandlerGridMovement();
+            break;
+        case State.Dead:
+            break;
+        }
 
     }
 
@@ -114,6 +129,7 @@ public class Snake : MonoBehaviour
             }
 
             gridPosition += gridMoveDirectionVector;
+            gridPosition = levelGrid.ValidateGridPosition(gridPosition);
 
             bool snakeAteFood = levelGrid.TrySnakeEatFood(gridPosition);
             if (snakeAteFood)
@@ -127,18 +143,21 @@ public class Snake : MonoBehaviour
                 snakeMovePositionList.RemoveAt(snakeMovePositionList.Count - 1);
             }
 
-            /*for(int i = 0; i < snakeMovePositionList.Count;i++)
+            UpdateSnakeBodyParts();
+
+            foreach (SnakeBodyPart snakeBodyPart in snakeBodyPartList)
             {
-                Vector2Int snakeMovePosition = snakeMovePositionList[i];
-                World_Sprite worldSprite = World_Sprite.Create(new Vector3(snakeMovePosition.x, snakeMovePosition.y), Vector3.one* .5f, Color.white);
-                FunctionTimer.Create(worldSprite.DestroySelf, gridMoveTimeMax);
-            }*/
+                Vector2Int snakeBodyPartGridPosition = snakeBodyPart.GetGridPosition();
+                if (gridPosition == snakeBodyPartGridPosition)
+                {
+                    CMDebug.TextPopup("DEAD!", transform.position);
+                    state = State.Dead;
+                }
+            }
 
             transform.position = new Vector3(gridPosition.x, gridPosition.y);
             transform.eulerAngles = new Vector3(0, 0, GetAngleFromVector(gridMoveDirectionVector) - 90);
             lastMoveDirection = new Vector2Int(gridMoveDirectionVector.x, gridMoveDirectionVector.y);
-
-            UpdateSnakeBodyParts();
 
         }
     }
@@ -215,9 +234,9 @@ public class Snake : MonoBehaviour
                         default:
                             angle = 180; ; break;
                         case Direction.Left:
-                            angle = 180+45; break;
-                        case Direction.Right:
                             angle = 180 - 45; break;
+                        case Direction.Right:
+                            angle = 180 + 45; break;
                     }
                     break;
                 case Direction.Left:
@@ -246,6 +265,11 @@ public class Snake : MonoBehaviour
             }
 
             transform.eulerAngles = new Vector3(0,0,angle);
+        }
+
+        public Vector2Int GetGridPosition()
+        {
+            return SnakeMovePosition.GetGridPosition();
         }
     }
 
