@@ -150,8 +150,9 @@ public class Snake : MonoBehaviour
                 Vector2Int snakeBodyPartGridPosition = snakeBodyPart.GetGridPosition();
                 if (gridPosition == snakeBodyPartGridPosition)
                 {
-                    CMDebug.TextPopup("DEAD!", transform.position);
+                    //CMDebug.TextPopup("DEAD!", transform.position);
                     state = State.Dead;
+                    GameHandler.SnakeDied();
                 }
             }
 

@@ -16,17 +16,26 @@ public class GameHandler : MonoBehaviour
     private void Awake()
     {
         instance = this;
+        InitializeStatic();
     }
     void Start()
     {
         Debug.Log("GameHandler.Start");
 
-        levelGrid = new LevelGrid(20, 20);
+        levelGrid = new LevelGrid(21, 21);
 
         snake.Setup(levelGrid);
         levelGrid.Setup(snake);
+
+//        CMDebug.ButtonUI(Vector2.zero, "Reload Scene" , () => {
+  //          Loader.Load(Loader.Scene.GameScene);
+    //    });
     }
 
+    public static void InitializeStatic()
+    {
+        score = 0;
+    }
     public static int GetScore()
     {
         return score;
@@ -35,5 +44,10 @@ public class GameHandler : MonoBehaviour
     public static void AddScore()
     {
         score += 100;
+    }
+
+    public static void SnakeDied()
+    {
+        GameOverWindow.showStatic();
     }
 }

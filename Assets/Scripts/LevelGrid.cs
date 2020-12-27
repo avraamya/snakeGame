@@ -21,6 +21,7 @@ public class LevelGrid
     {
         this.snake = snake;
 
+
         SpawnFood();
     }
 
